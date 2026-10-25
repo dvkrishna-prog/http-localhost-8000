@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07111f">
+<meta name="description" content="Offline personal cybersecurity toolkit">
+<link rel="manifest" href="./manifest.json">
+<title>CyberSafe Toolkit</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#07111f;
+  --panel:#101f31;
+  --line:#243a50;
+  --green:#38e6a4;
+  --blue:#59a8ff;
+  --muted:#a7b7ca;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:radial-gradient(ellipse at top,#132b43,var(--bg) 65%);
+  color:#edf5ff;
+  font:16px/1.55 system-ui,Arial,sans-serif;
+  min-height:100vh;
+}
+header, main, footer {
+  width:min(920px,92%);
+  margin:auto;
+}
+header { padding:28px 0 16px; }
+.brand { color:var(--green); font-weight:800; letter-spacing:1px; }
+h1 { font-size:clamp(30px,6vw,46px); line-height:1.1; margin:10px 0; }
+h2 { font-size:21px; margin:0 0 14px; }
+p { color:var(--muted); }
+.status { font-size:13px; color:var(--green); }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr)); gap:16px; }
+.card {
+  background:rgba(16,31,49,.96);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:20px;
+  min-width:0;
+}
+label { display:block; margin:12px 0 6px; color:#d6e4f4; }
+input[type="text"], input[type="password"], input[type="number"] {
+  width:100%; padding:12px; border:1px solid #39516a;
+  border-radius:9px; background:#071525; color:white;
+  font:inherit; min-width:0;
+}
+input[type="checkbox"] { accent-color:var(--green); width:18px; height:18px; }
+button {
+  padding:11px 14px; border:0; border-radius:9px;
+  background:var(--green); color:#061b17; font-weight:750;
+  cursor:pointer; font:inherit; margin:8px 5px 0 0;
+}
+button.secondary { background:#203b55; color:#edf5ff; }
+button:focus-visible, input:focus-visible {
+  outline:3px solid var(--blue); outline-offset:3px;
+}
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.row input { flex:1; }
+.meter { height:8px; background:#26384b; border-radius:8px; overflow:hidden; margin:12px 0; }
+#bar { height:100%; width:0; background:#e85d6b; transition:width .2s; }
+#strength { font-weight:700; }
+.small { font-size:13px; }
+.result { overflow-wrap:anywhere; }
+.check { display:flex; gap:10px; align-items:flex-start; margin:12px 0; }
+.check label { margin:0; }
+footer { padding:24px 0; font-size:13px; }
+hr { border:0; border-top:1px solid var(--line); margin:16px 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🛡 CYBERSAFE TOOLKIT</div>
+  <h1>Your digital safety hub.</h1>
+  <p>Simple security tools that run directly on your device.</p>
+  <div class="status" id="connection">● Checking connection…</div>
+</header>
+
+<main class="grid">
+  <section class="card">
+    <h2>01 / Password checker</h2>
+    <p class="small">Check a password locally. It is not sent to a server.</p>
+    <label for="password">Enter a test password</label>
+    <div class="row">
+      <input id="password" type="password" autocomplete="off"
+        placeholder="Enter password to check">
+      <button class="secondary" id="toggle" type="button">Show</button>
+    </div>
+    <div class="meter"><div id="bar"></div></div>
+    <div id="strength" aria-live="polite">Enter a password to begin.</div>
+    <p id="feedback" class="small"></p>
+    <p class="small">For safety, do not enter a password you currently use.</p>
+  </section>
+
+  <section class="card">
+    <h2>02 / Password generator</h2>
+    <p class="small">Generate a random password using your browser's
+      cryptographic random-number generator.</p>
+    <label for="length">Password length (12–64)</label>
+    <input id="length" type="number" min="12" max="64" value="20">
+    <div class="check"><input type="checkbox" id="upper" checked>
+      <label for="upper">Uppercase letters (A–Z)</label></div>
+    <div class="check"><input type="checkbox" id="lower" checked>
+      <label for="lower">Lowercase letters (a–z)</label></div>
+    <div class="check"><input type="checkbox" id="digits" checked>
+      <label for="digits">Numbers (0–9)</label></div>
+    <div class="check"><input type="checkbox" id="symbols" checked>
+      <label for="symbols">Symbols (!@#$...)</label></div>
+    <button id="generate" type="button">Generate password</button>
+    <div class="row">
+      <input id="generated" type="text" readonly
+        aria-label="Generated password" placeholder="Your password appears here">
+      <button id="copy" class="secondary" type="button">Copy</button>
+    </div>
+    <p id="genMessage" class="small" aria-live="polite"></p>
+  </section>
+
+  <section class="card">
+    <h2>03 / Security checklist</h2>
+    <p class="small">Your checked items are saved in this browser on this device.</p>
+    <div id="checklist">
+      <div class="check"><input type="checkbox" id="c1">
+        <label for="c1">Use unique passwords for important accounts.</label></div>
+      <div class="check"><input type="checkbox" id="c2">
+        <label for="c2">Enable two-factor authentication.</label></div>
+      <div class="check"><input type="checkbox" id="c3">
+        <label for="c3">Install operating system and app updates.</label></div>
+      <div class="check"><input type="checkbox" id="c4">
+        <label for="c4">Check links before opening them.</label></div>
+      <div class="check"><input type="checkbox" id="c5">
+        <label for="c5">Keep backups of important files.</label></div>
+      <div class="check"><input type="checkbox" id="c6">
+        <label for="c6">Avoid sharing verification codes.</label></div>
+    </div>
+    <hr>
+    <div id="progress" aria-live="polite">0 of 6 completed</div>
+    <button id="reset" class="secondary" type="button">Reset checklist</button>
+  </section>
+
+  <section class="card">
+    <h2>04 / Security basics</h2>
+    <p><strong>Phishing:</strong> Fake messages that try to steal information.</p>
+    <p><strong>2FA:</strong> An additional verification step beyond a password.</p>
+    <p><strong>Updates:</strong> Often fix security vulnerabilities.</p>
+    <p><strong>HTTPS:</strong> Encrypts the connection to a website, but does not
+      automatically mean the site itself is trustworthy.</p>
+    <p class="small">This toolkit is educational. It is not an antivirus or a
+      substitute for a professional security audit.</p>
+  </section>
+</main>
+
+<footer>
+  CyberSafe Toolkit · Local-first design · No analytics or external libraries
+</footer>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+// Password checker: a practical estimate, not a guarantee of security.
+function checkPassword() {
+  const p = $("password").value;
+  const feedback = [];
+  let score = 0;
+
+  if (!p) {
+    $("strength").textContent = "Enter a password to begin.";
+    $("feedback").textContent = "";
+    $("bar").style.width = "0%";
+    return;
+  }
+
+  if (p.length >= 12) score++;
+  else feedback.push("Use at least 12 characters.");
+
+  if (p.length >= 16) score++;
+  if (/[a-z]/.test(p) && /[A-Z]/.test(p)) score++;
+  else feedback.push("Consider mixing uppercase and lowercase letters.");
+
+  if (/[0-9]/.test(p)) score++;
+  else feedback.push("Consider including numbers.");
+
+  if (/[^A-Za-z0-9]/.test(p)) score++;
+  else feedback.push("Consider including symbols.");
+
+  if (/(.)\1{2,}/.test(p)) {
+    score = Math.max(0, score - 1);
+    feedback.push("Avoid repeating the same character many times.");
+  }
+
+  if (/password|qwerty|letmein|admin|123456/i.test(p)) {
+    score = 0;
+    feedback.push("Avoid common words and predictable sequences.");
+  }
+
+  const labels = ["Very weak", "Weak", "Fair", "Good", "Strong", "Very strong"];
+  $("strength").textContent = labels[Math.min(score, 5)];
+  $("bar").style.width = (score / 5 * 100) + "%";
+  $("bar").style.background =
+    score <= 1 ? "#e85d6b" :
+    score <= 3 ? "#f4bd50" : "#38e6a4";
+
+  $("feedback").textContent = feedback.length
+    ? feedback.join(" ") : "Good indicators. Make sure it is unique and not reused.";
+}
+$("password").addEventListener("input", checkPassword);
+$("toggle").addEventListener("click", () => {
+  const field = $("password");
+  field.type = field.type === "password" ? "text" : "password";
+  $("toggle").textContent = field.type === "password" ? "Show" : "Hide";
+});
+
+// Cryptographically random selection with rejection sampling.
+function randomIndex(max) {
+  const limit = Math.floor(256 / max) * max;
+  const bytes = new Uint8Array(1);
+  do {
+    crypto.getRandomValues(bytes);
+  } while (bytes[0] >= limit);
+  return bytes[0] % max;
+}
+function secureChar(charset) {
+  return charset[randomIndex(charset.length)];
+}
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = randomIndex(i + 1);
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+$("generate").addEventListener("click", () => {
+  if (!globalThis.crypto || !crypto.getRandomValues) {
+    $("genMessage").textContent = "Secure randomness is unavailable. Open this app in a modern browser on localhost or HTTPS.";
+    return;
+  }
+
+  const length = Number($("length").value);
+  if (!Number.isInteger(length) || length < 12 || length > 64) {
+    $("genMessage").textContent = "Choose a whole number between 12 and 64.";
+    return;
+  }
+
+  const groups = [];
+  if ($("upper").checked) groups.push("ABCDEFGHJKLMNPQRSTUVWXYZ");
+  if ($("lower").checked) groups.push("abcdefghijkmnopqrstuvwxyz");
+  if ($("digits").checked) groups.push("23456789");
+  if ($("symbols").checked) groups.push("!@#$%^&*_-+=");
+
+  if (!groups.length) {
+    $("genMessage").textContent = "Select at least one character type.";
+    return;
+  }
+  if (groups.length > length) {
+    $("genMessage").textContent = "Increase the length to fit all selected character types.";
+    return;
+  }
+
+  const pool = groups.join("");
+  const chars = groups.map(secureChar);
+  while (chars.length < length) chars.push(secureChar(pool));
+  $("generated").value = shuffle(chars).join("");
+  $("genMessage").textContent = "Generated locally. Save it in a trusted password manager.";
+});
+
+$("copy").addEventListener("click", async () => {
+  const value = $("generated").value;
+  if (!value) {
+    $("genMessage").textContent = "Generate a password first.";
+    return;
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+    } else {
+      $("generated").select();
+      if (!document.execCommand("copy")) throw new Error("Copy unavailable");
+    }
+    $("genMessage").textContent = "Copied. Avoid pasting passwords into untrusted apps.";
+  } catch {
+    $("generated").select();
+    $("genMessage").textContent = "Automatic copy failed. Select the password and copy it manually.";
+  }
+});
+
+// Checklist persistence.
+const ids = ["c1", "c2", "c3", "c4", "c5", "c6"];
+const storageKey = "cybersafe-checklist-v1";
+function saveChecklist() {
+  const state = Object.fromEntries(ids.map(id => [id, $(id).checked]));
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(state));
+  } catch {
+    // The checklist still works during this session.
+  }
+  updateProgress();
+}
+function updateProgress() {
+  const count = ids.filter(id => $(id).checked).length;
+  $("progress").textContent = count + " of " + ids.length + " completed";
+}
+try {
+  const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+  ids.forEach(id => { $(id).checked = saved[id] === true; });
+} catch {
+  // Continue with an empty checklist if saved data is unavailable.
+}
+ids.forEach(id => $(id).addEventListener("change", saveChecklist));
+$("reset").addEventListener("click", () => {
+  ids.forEach(id => { $(id).checked = false; });
+  saveChecklist();
+});
+updateProgress();
+
+// Connection indicator and offline app registration.
+function updateConnection() {
+  $("connection").textContent = navigator.onLine
+    ? "● Ready · Internet connection available"
+    : "● Offline mode · Local tools still work";
+}
+window.addEventListener("online", updateConnection);
+window.addEventListener("offline", updateConnection);
+updateConnection();
+
+if ("serviceWorker" in navigator &&
+    (location.protocol === "https:" || location.hostname === "localhost" ||
+     location.hostname === "127.0.0.1")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .catch(() => {
+        $("connection").textContent += " · Offline cache setup unavailable";
+      });
+  });
+}
+</script>
+</body>
+</html>
